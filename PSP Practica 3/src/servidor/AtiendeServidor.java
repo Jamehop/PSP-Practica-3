@@ -9,11 +9,11 @@ import java.util.ArrayList;
 
 public class AtiendeServidor extends Thread{
 	private Socket socket;
-	private ArrayList<AtiendeServidor> threadList;
+	private ArrayList<AtiendeServidor> listaHilos;
 	private PrintWriter output;
-	public AtiendeServidor(Socket socket, ArrayList<AtiendeServidor> threadList) {
+	public AtiendeServidor(Socket socket, ArrayList<AtiendeServidor> listaHilos) {
 		this.socket = socket;
-		this.threadList = threadList;
+		this.listaHilos = listaHilos;
 	}
 	
 	@Override
@@ -37,8 +37,8 @@ public class AtiendeServidor extends Thread{
 		}
 	}
 
-	private void printToAllClients(String outputString) {
-		for(AtiendeServidor miAtiendeServidor: threadList) {
+	public void printToAllClients(String outputString) {
+		for(AtiendeServidor miAtiendeServidor: listaHilos) {
 			miAtiendeServidor.output.println(outputString);
 		}
 		
