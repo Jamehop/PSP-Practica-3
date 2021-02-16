@@ -24,7 +24,7 @@ public class AtiendeCliente extends Thread{
 				System.out.println(respuesta);
 			}
 		} catch (IOException e) {
-			System.out.println("Error en hilo del cliente");
+			e.printStackTrace();
 		} finally {
 			try {
 				input.close();

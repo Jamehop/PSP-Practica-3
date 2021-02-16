@@ -28,7 +28,7 @@ public class AppCliente {
 				System.out.println("Introduce tu nombre");
 				inputUsuario=Leer.pedirCadena();
 				nombreUsuario=inputUsuario;
-				output.println(nombreUsuario);
+				output.println("[Nuevo cliente se ha unido "+nombreUsuario+"]");
 				if(inputUsuario.equals("*")) {
 					break;
 				}
