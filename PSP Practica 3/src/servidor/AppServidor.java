@@ -9,25 +9,27 @@ import java.util.ArrayList;
 
 public class AppServidor {
 	static final int PUERTO = 4444;
+	private static final int MAX_CONEXIONES = 10;
 
 	public static void main(String[] args) throws IOException {
 		ServerSocket serverSocket = new ServerSocket(PUERTO);
 		System.out.println("Escuchando en el puerto " + PUERTO);
 
-		ArrayList<AtiendeServidor> listahilos=new ArrayList<>();
+		Comunhilos comunhilos= new Comunhilos(MAX_CONEXIONES);
 		while(true) {
 			Socket socket = serverSocket.accept();
-			AtiendeServidor hilosServidor=new AtiendeServidor(socket, listahilos);
+			AtiendeClientes hilosServidor=new AtiendeClientes(socket, comunhilos);
 			
-			listahilos.add(hilosServidor);
+			comunhilos.anadir(socket);
 			hilosServidor.start();
+			System.out.println("Nuevo cliente");
 		}
 		
 		
 		
 		
 		/*while (true) {
-			// Esperamos a la primera petición de conexión que venga y la aceptamos
+			// Esperamos a la primera peticiï¿½n de conexiï¿½n que venga y la aceptamos
 			Socket socket = serverSocket.accept();
 
 			// Obtenemos los canales de entrada de datos y de salida
@@ -39,7 +41,7 @@ public class AppServidor {
 			System.out.println("Recibido mensaje del cliente: " + mensajeDelCliente);
 			salida.writeUTF("El cliente dijo: " + mensajeDelCliente);
 
-			// Cerramos conexión
+			// Cerramos conexiï¿½n
 			socket.close();
 			serverSocket.close();
 			System.out.println("Cliente desconectado.");

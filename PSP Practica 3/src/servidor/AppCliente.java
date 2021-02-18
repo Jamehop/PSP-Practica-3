@@ -20,7 +20,7 @@ public class AppCliente {
 		PrintWriter output=new PrintWriter(socket.getOutputStream(), true);
 		String inputUsuario;
 		String nombreUsuario="";
-		AtiendeCliente hiloCliente=new AtiendeCliente(socket);
+		AtiendeServidor hiloCliente=new AtiendeServidor(socket);
 		hiloCliente.start();
 
 		do {
@@ -28,7 +28,8 @@ public class AppCliente {
 				System.out.println("Introduce tu nombre");
 				inputUsuario=Leer.pedirCadena();
 				nombreUsuario=inputUsuario;
-				output.println("[Nuevo cliente se ha unido "+nombreUsuario+"]");
+				
+				output.println(nombreUsuario);
 				if(inputUsuario.equals("*")) {
 					break;
 				}
@@ -56,7 +57,7 @@ public class AppCliente {
 		System.out.println("Recibido mensaje del servidor:\n " + mensajeDelServidor);
 		string = Leer.pedirCadena();
 
-		// Cerramos la conexión
+		// Cerramos la conexiï¿½n
 		socket.close();
 		System.out.println("Cliente cerrado");*/
 
