@@ -18,7 +18,7 @@ public class AppServidor {
 		Comunhilos comunhilos= new Comunhilos(MAX_CONEXIONES);
 		while(true) {
 			Socket socket = serverSocket.accept();
-			AtiendeClientes hilosServidor=new AtiendeClientes(socket, comunhilos);
+			AtiendeCliente hilosServidor=new AtiendeCliente(socket, comunhilos);
 			
 			comunhilos.anadir(socket);
 			hilosServidor.start();

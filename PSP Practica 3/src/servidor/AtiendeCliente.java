@@ -3,36 +3,49 @@ package servidor;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.ArrayList;
 
 public class AtiendeCliente extends Thread{
-	static final String IP = "localhost";
-	static final int PUERTO = 4444;
+	private static final int MAX_CONEXIONES = 10;
+	private Comunhilos comunhilos;
 	private Socket socket;
-	private BufferedReader input;
-
-	public AtiendeCliente(Socket socket) throws IOException {
+	
+	private PrintWriter output;
+	public AtiendeCliente(Socket socket, Comunhilos comunhilos) {
 		this.socket = socket;
-		this.input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+		this.comunhilos=comunhilos;
 	}
-
+	
 	@Override
 	public void run() {
 		try {
-			while (true) {
-				String respuesta = input.readLine();
-				System.out.println(respuesta);
+			
+			BufferedReader input=new BufferedReader(new InputStreamReader(socket.getInputStream()));
+			//todos los mensajes
+			output=new PrintWriter(socket.getOutputStream(), true);
+			String nombre=input.readLine();
+			while(true) {
+				String outputString=input.readLine();
+				if(outputString.equals("*")) {
+					break;
+				}
+				comunhilos.anadirMensaje(outputString, nombre);
+				comunhilos.anadir(socket);
+				
+				System.out.println("(Recibido en servidor) "+outputString);
 			}
 		} catch (IOException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} finally {
-			try {
-				input.close();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
 		}
 	}
 
+	/*private void printToAllClients(String outputString) {
+		for(AtiendeServidor miAtiendeServidor: threadList) {
+			miAtiendeServidor.output.println(outputString);
+		}
+		
+	}*/
 }

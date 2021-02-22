@@ -10,6 +10,7 @@ public class Comunhilos {
 	private int conexcionesActuales;
 	private Socket[] tablaDeConexiones;
 	private String mensajes;
+	
 	public Comunhilos(int MAX_CONEXIONES) {
 		this.MAX_CONEXIONES=MAX_CONEXIONES;
 		this.conexionesTotales = 0;

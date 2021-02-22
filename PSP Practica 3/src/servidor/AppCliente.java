@@ -22,7 +22,6 @@ public class AppCliente {
 		String nombreUsuario="";
 		AtiendeServidor hiloCliente=new AtiendeServidor(socket);
 		hiloCliente.start();
-
 		do {
 			if(nombreUsuario.equals("")) {
 				System.out.println("Introduce tu nombre");
