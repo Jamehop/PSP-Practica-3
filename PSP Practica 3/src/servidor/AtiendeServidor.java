@@ -7,7 +7,6 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 
-//Recibe los mensajes del servidor y los escribe en el terminal.
 public class AtiendeServidor extends Thread {
 
 	Socket conexion;
@@ -22,7 +21,8 @@ public class AtiendeServidor extends Thread {
 	public void run() {
 		try {		
 			while (true) {
-				String salidaString = entrada.readUTF(); // El readUTF es bloqueante, por eso lo ponemos en un hilo.
+				//escribe los mensajes que llegan al socket en el appservidor
+				String salidaString = entrada.readUTF();
 				System.out.println(salidaString);
 			}
 		} catch (IOException e) {

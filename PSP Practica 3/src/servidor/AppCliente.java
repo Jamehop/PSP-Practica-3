@@ -13,8 +13,8 @@ public class AppCliente {
 	static final String IP = "localhost";
 	static final int PUERTO = AppServidor.PUERTO;
 	static DataOutputStream datosSalida;
-	static String nombreUser;
-	static String mensajeUser;
+	static String nombreUsuario;
+	static String mensajeUsuario;
 
 	public static void main(String[] args) {
 		
@@ -30,20 +30,20 @@ public class AppCliente {
 			datosSalida = new DataOutputStream(socketCliente.getOutputStream());
 			
 			do {
-				if(nombreUser == null) {
+				if(nombreUsuario == null) {
 					System.out.println("Introduce tu nombre");
-					nombreUser = Leer.pedirCadena();
-					datosSalida.writeUTF(nombreUser + " se acaba de conectar.");
+					nombreUsuario = Leer.pedirCadena();
+					datosSalida.writeUTF(nombreUsuario + " se ha unido al chat.");
 				}else {
-					String escriboNombre = "[" + nombreUser + "]  ";					
-					mensajeUser = Leer.pedirCadena();
+					String escriboNombre = "[" + nombreUsuario + "]  ";					
+					mensajeUsuario = Leer.pedirCadena();
 					System.out.print(escriboNombre);
-					System.out.println(mensajeUser);
+					System.out.println(mensajeUsuario);
 					
-					String nombreUserYMensaje = escriboNombre + mensajeUser;
+					String nombreUserYMensaje = escriboNombre + mensajeUsuario;
 					datosSalida.writeUTF(nombreUserYMensaje);						
 				}				
-			}while(mensajeUser != "*");
+			}while(mensajeUsuario != "*");
 			
 			
 			socketCliente.close();

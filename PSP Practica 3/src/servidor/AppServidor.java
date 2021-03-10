@@ -17,6 +17,7 @@ public class AppServidor {
 			@SuppressWarnings("resource")
 			ServerSocket serverSocket = new ServerSocket();	
 				
+			//implementa la IP y el puerto
 			InetSocketAddress direccion = new InetSocketAddress("localhost", PUERTO);
 			serverSocket.bind(direccion);						
 			System.out.println("Escuchando en puerto " + PUERTO);
