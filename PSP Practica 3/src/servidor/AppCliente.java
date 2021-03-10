@@ -6,59 +6,52 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 
 public class AppCliente {
 	static final String IP = "localhost";
-	static final int PUERTO = 4444;
+	static final int PUERTO = AppServidor.PUERTO;
+	static DataOutputStream datosSalida;
+	static String nombreUser;
+	static String mensajeUser;
 
-	public static void main(String[] args) throws IOException {
-		// Obtenemos conexion e inicializamos
-		Socket socket = new Socket(IP, PUERTO);
+	public static void main(String[] args) {
 		
-		BufferedReader input=new BufferedReader(new InputStreamReader(socket.getInputStream()));
-		PrintWriter output=new PrintWriter(socket.getOutputStream(), true);
-		String inputUsuario;
-		String nombreUsuario="";
-		AtiendeServidor hiloCliente=new AtiendeServidor(socket);
-		hiloCliente.start();
-		do {
-			if(nombreUsuario.equals("")) {
-				System.out.println("Introduce tu nombre");
-				inputUsuario=Leer.pedirCadena();
-				nombreUsuario=inputUsuario;
-				
-				output.println(nombreUsuario);
-				if(inputUsuario.equals("*")) {
-					break;
-				}
-			}
-			else {
-				inputUsuario=Leer.pedirCadena();
-				output.println(nombreUsuario+" dice: "+inputUsuario);
-				if(inputUsuario.equals("*")) {
-					break;
-				}
-				
-			}
-		}while(!inputUsuario.equals("*"));
+		try {
+			Socket socketCliente = new Socket();					
+			InetSocketAddress direccion = new InetSocketAddress(IP, PUERTO);
+			socketCliente.connect(direccion);
+			
+			//CREAR ATIENDE_SERVIDOR para leer los mensajes del terminal y enviarselos al servidor.
+			AtiendeServidor atiendeServidor = new AtiendeServidor(socketCliente);
+			atiendeServidor.start();
+			
+			datosSalida = new DataOutputStream(socketCliente.getOutputStream());
+			
+			do {
+				if(nombreUser == null) {
+					System.out.println("Introduce tu nombre");
+					nombreUser = Leer.pedirCadena();
+					datosSalida.writeUTF(nombreUser + " se acaba de conectar.");
+				}else {
+					String escriboNombre = "[" + nombreUser + "]  ";					
+					mensajeUser = Leer.pedirCadena();
+					System.out.print(escriboNombre);
+					System.out.println(mensajeUser);
+					
+					String nombreUserYMensaje = escriboNombre + mensajeUser;
+					datosSalida.writeUTF(nombreUserYMensaje);						
+				}				
+			}while(mensajeUser != "*");
+			
+			
+			socketCliente.close();
+		} catch (IOException e) {			
+			e.printStackTrace();
+		}			
 		
-		/*
-		DataInputStream entrada = new DataInputStream(socket.getInputStream());
-		DataOutputStream salida = new DataOutputStream(socket.getOutputStream());
+	}//FIN MAIN
+	
 
-		System.out.println("Escribe lo que sea (* para cerrar):");
-		String string = Leer.pedirCadena();
-
-		// Enviamos un mensaje y esperamos la respuesta del servidor
-		salida.writeUTF("Hola desde el cliente");
-		String mensajeDelServidor = entrada.readUTF();
-		System.out.println("Recibido mensaje del servidor:\n " + mensajeDelServidor);
-		string = Leer.pedirCadena();
-
-		// Cerramos la conexi�n
-		socket.close();
-		System.out.println("Cliente cerrado");*/
-
-	}
 }

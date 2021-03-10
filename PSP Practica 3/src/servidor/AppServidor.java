@@ -3,49 +3,41 @@ package servidor;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 
 public class AppServidor {
 	static final int PUERTO = 4444;
-	private static final int MAX_CONEXIONES = 10;
-
-	public static void main(String[] args) throws IOException {
-		ServerSocket serverSocket = new ServerSocket(PUERTO);
-		System.out.println("Escuchando en el puerto " + PUERTO);
-
-		Comunhilos comunhilos= new Comunhilos(MAX_CONEXIONES);
-		while(true) {
-			Socket socket = serverSocket.accept();
-			AtiendeCliente hilosServidor=new AtiendeCliente(socket, comunhilos);
+	static final int MAX_CONEXIONES = 10;
+	
+	public static void main(String[] args) {
+		try {
+			@SuppressWarnings("resource")
+			ServerSocket serverSocket = new ServerSocket();	
+				
+			InetSocketAddress direccion = new InetSocketAddress("localhost", PUERTO);
+			serverSocket.bind(direccion);						
+			System.out.println("Escuchando en puerto " + PUERTO);
 			
-			comunhilos.anadir(socket);
-			hilosServidor.start();
-			System.out.println("Nuevo cliente");
-		}
-		
-		
-		
-		
-		/*while (true) {
-			// Esperamos a la primera peticiï¿½n de conexiï¿½n que venga y la aceptamos
-			Socket socket = serverSocket.accept();
-
-			// Obtenemos los canales de entrada de datos y de salida
-			DataInputStream entrada = new DataInputStream(socket.getInputStream());
-			DataOutputStream salida = new DataOutputStream(socket.getOutputStream());
-
-			// Leemos un mensaje y devolvemos el mismo mensaje
-			String mensajeDelCliente = entrada.readUTF();
-			System.out.println("Recibido mensaje del cliente: " + mensajeDelCliente);
-			salida.writeUTF("El cliente dijo: " + mensajeDelCliente);
-
-			// Cerramos conexiï¿½n
-			socket.close();
-			serverSocket.close();
-			System.out.println("Cliente desconectado.");
-		}*/
-
-	}
+			int conexionesContador = 0;
+			while (conexionesContador<MAX_CONEXIONES) {					
+				Socket clienteSocket = serverSocket.accept();	
+				conexionesContador++;
+				Comunhilos.setConexionesActuales(conexionesContador);	
+				
+				//CREO ATIENDE_CLIENTE 
+				AtiendeCliente atiendeCliente = new AtiendeCliente(clienteSocket);
+				atiendeCliente.start();		
+				
+				Comunhilos.setSocket(clienteSocket);			
+			}
+			System.out.println("Máximas conexiones alcanzadas.");
+		} catch (IOException e) {			
+			e.printStackTrace();
+		}	
+	}//FIN MAIN
+	
+	
 }

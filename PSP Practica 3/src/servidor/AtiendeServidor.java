@@ -1,35 +1,34 @@
 package servidor;
 
 import java.io.BufferedReader;
+import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 
-public class AtiendeServidor extends Thread{
-	static final String IP = "localhost";
-	static final int PUERTO = 4444;
-	private Socket socket;
-	private PrintWriter output;
-	public AtiendeServidor(Socket socket) throws IOException {
-		this.socket = socket;
-		
+//Recibe los mensajes del servidor y los escribe en el terminal.
+public class AtiendeServidor extends Thread {
+
+	Socket conexion;
+	DataInputStream entrada;
+
+	public AtiendeServidor(Socket conexion) throws IOException {
+		this.entrada = new DataInputStream(conexion.getInputStream());
+		this.conexion = conexion;
 	}
 
 	@Override
 	public void run() {
-		
-		try {
-			
-			BufferedReader input =new BufferedReader(new InputStreamReader(socket.getInputStream()));
-			output=new PrintWriter(socket.getOutputStream(), true);
+		try {		
 			while (true) {
-				String respuesta = input.readLine();
-				System.out.println(respuesta);
+				String salidaString = entrada.readUTF(); // El readUTF es bloqueante, por eso lo ponemos en un hilo.
+				System.out.println(salidaString);
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+
 	}
 
 }

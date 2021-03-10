@@ -3,56 +3,47 @@ package servidor;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.ArrayList;
 
 public class Comunhilos {
-	private static int MAX_CONEXIONES=10;
+
+	private final int MAX_CONEXIONES = 5;
 	private int conexionesTotales;
-	private int conexcionesActuales;
-	private Socket[] tablaDeConexiones;
-	private String mensajes;
+	private int conexionesActuales = 0;
 	
-	public Comunhilos(int MAX_CONEXIONES) {
-		this.MAX_CONEXIONES=MAX_CONEXIONES;
-		this.conexionesTotales = 0;
-		this.conexcionesActuales = 0;
-		this.mensajes="";
+	private static ArrayList<Socket> sockets = new ArrayList<Socket>();
+	private static ArrayList<String> mensajes;
+	private static String mensaje;
+	
+	public Comunhilos(int MAX_CONEXIONES_SIMULTANEAS) {
 	}
+
 	public int getConexionesTotales() {
 		return conexionesTotales;
 	}
-	public void setConexionesTotales(int conexionesTotales) {
-		this.conexionesTotales = conexionesTotales;
-	}
-	public int getConexcionesActuales() {
-		return conexcionesActuales;
-	}
-	public void setConexcionesActuales(int conexcionesActuales) {
-		this.conexcionesActuales = conexcionesActuales;
-	}
-	public String getMensajes() {
-		return mensajes;
-	}
-	public void setMensajes(String mensajes) {
-		this.mensajes = mensajes;
+
+	public int getConexionesActuales() {
+		return conexionesActuales;
 	}
 	
-	public synchronized void anadirMensaje(String mensaje, String nombreUsuario) throws IOException {
-		String mensajeConUsuario=nombreUsuario+": "+mensaje;
-		mensajes+=mensajeConUsuario;
-		
-		for(int i=0;i<conexcionesActuales;i++) {
-			PrintWriter output=new PrintWriter(tablaDeConexiones[i].getOutputStream(), true);
-			output.println(mensajeConUsuario);
-		}
+	public static void setConexionesActuales(int conexionesActuales) {
+		conexionesActuales = conexionesActuales;
 	}
-	public synchronized void anadir(Socket conexion) throws IOException {
-		tablaDeConexiones[conexionesTotales]=conexion;
-		conexionesTotales++;
-		conexcionesActuales++;
-		
-		PrintWriter output=new PrintWriter(conexion.getOutputStream(), true);
-		output.println(mensajes);
-		
+
+	public static ArrayList<Socket> getSockets() {
+		return sockets;
+	}
+
+	public static void setSocket(Socket socket) {
+		Comunhilos.sockets.add(socket);
+	}
+
+	public static String getMensaje() {
+		return mensaje;
+	}
+	
+	public static void setMensaje(String mensaje) {
+		Comunhilos.mensaje = mensaje;
 	}
 	
 }

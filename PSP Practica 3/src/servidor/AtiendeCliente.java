@@ -1,6 +1,8 @@
 package servidor;
 
 import java.io.BufferedReader;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
@@ -8,44 +10,42 @@ import java.net.Socket;
 import java.util.ArrayList;
 
 public class AtiendeCliente extends Thread{
-	private static final int MAX_CONEXIONES = 10;
-	private Comunhilos comunhilos;
-	private Socket socket;
 	
-	private PrintWriter output;
-	public AtiendeCliente(Socket socket, Comunhilos comunhilos) {
-		this.socket = socket;
-		this.comunhilos=comunhilos;
+	Socket conexion;
+	DataInputStream entrada;
+	DataOutputStream salida;
+	Comunhilos Comunhilos = null;
+
+//CONSTRUCTOR
+	public AtiendeCliente(Socket conexion) throws IOException {
+		this.entrada = new DataInputStream(conexion.getInputStream());
+		this.conexion = conexion;
 	}
 	
+//METODOS
 	@Override
 	public void run() {
-		try {
-			
-			BufferedReader input=new BufferedReader(new InputStreamReader(socket.getInputStream()));
-			//todos los mensajes
-			output=new PrintWriter(socket.getOutputStream(), true);
-			String nombre=input.readLine();
-			while(true) {
-				String outputString=input.readLine();
-				if(outputString.equals("*")) {
-					break;
-				}
-				comunhilos.anadirMensaje(outputString, nombre);
-				comunhilos.anadir(socket);
+		try {				
+			while(true) {	
+				//Lee los mensajes de los clientes y los imprime.
+				String mensaje = entrada.readUTF();	
+				System.out.println(mensaje);
+				//Guardo los mensajes en el monitor
 				
-				System.out.println("(Recibido en servidor) "+outputString);
-			}
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
+				ArrayList<Socket> listaSockets = Comunhilos.getSockets();	//Cargo la ista de los sockets
+				for(Socket s : listaSockets) {
+					if(s != conexion) {		//Si el socket es el mismo que el del cliente que escribe el mensaje, no se lo vuelve a enviar.
+						salida = new DataOutputStream(s.getOutputStream());
+						salida.writeUTF(mensaje);
+					}
+				}
 
-	/*private void printToAllClients(String outputString) {
-		for(AtiendeServidor miAtiendeServidor: threadList) {
-			miAtiendeServidor.output.println(outputString);
-		}
+			}
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		}		
+	}//FIN RUN
+	
 		
-	}*/
-}
+}//FIN AtiendeCliente
